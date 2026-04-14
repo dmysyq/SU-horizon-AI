@@ -1,0 +1,18 @@
+export const ROUTES = {
+  HOME: '/',
+  SIGN_IN: '/auth/sign-in',
+  SIGN_UP: '/auth/sign-up',
+  COURSES: '/courses',
+  COURSE: (slug: string) => `/courses/${slug}`,
+  LESSON: (courseSlug: string, lessonSlug: string) => `/courses/${courseSlug}/learn/${lessonSlug}`,
+  ME: '/me',
+  ME_ATTEMPTS: '/me/attempts',
+  ASSISTANT: '/assistant',
+  ASSISTANT_ATTEMPT: (id: string) => `/assistant/attempt/${id}`,
+  ATTEMPT: (id: string) => `/attempts/${id}`,
+  TASK_SUBMIT: (id: string) => `/tasks/${id}/submit`,
+  REPORT_SUBMIT: (id: string) => `/reports/${id}/submit`,
+  ADMIN: '/admin',
+  ADMIN_TASKS_NEW: '/admin/tasks/new',
+  ADMIN_TESTS_NEW: '/admin/tests/new',
+} as const;

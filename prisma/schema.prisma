@@ -1,0 +1,84 @@
+// Схема БД для CodeHorizon AI
+// Источник структуры: codehorizon-api (упрощённо)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      String   @default("student") // student | teacher
+  createdAt DateTime @default(now())
+
+  attempts Attempt[]
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String?
+  level       String   @default("Начальный")
+  createdAt   DateTime @default(now())
+
+  lessons Lesson[]
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  slug        String
+  courseId    String
+  title       String
+  content     String?
+  hasTask     Boolean  @default(false)
+  hasReport   Boolean  @default(false)
+  orderIndex  Int      @default(0)
+
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, slug])
+
+  tasks Task[]
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  criteria    String?  // Критерии для ИИ
+  type        String   @default("test") // test | report
+
+  lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  attempts Attempt[]
+}
+
+model Attempt {
+  id             String   @id @default(cuid())
+  studentAnswer  String
+  score          Int
+  maxScore       Int      @default(10)
+  errors         String   // JSON array
+  recommendations String  // JSON array
+
+  taskId   String?
+  task     Task?  @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  courseSlug  String
+  courseTitle String
+  lessonSlug  String
+  lessonTitle String
+  type        String   @default("test") // test | report
+
+  createdAt DateTime @default(now())
+}
